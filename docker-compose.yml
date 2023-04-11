@@ -1,0 +1,72 @@
+version: "3"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    volumes:
+      - /var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .env.rabbitmq
+    networks:
+      - app_net
+
+  postgres:
+    image: postgres
+    env_file:
+      - .env.postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - app_net
+
+  postgres_admin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    env_file:
+      - .env.postgres
+    ports:
+      - "15432:80"
+    networks:
+      - app_net
+
+  listener:
+    container_name: listener
+    build:
+      context: ./
+      dockerfile: ./listener/Dockerfile
+    env_file:
+      - ./listener/.env
+    depends_on:
+      - rabbitmq
+    networks:
+      - app_net
+    volumes:
+      - ./listener:/usr/src/app # any change to base folder should be reflected
+      - /usr/src/app/node_modules
+    command: npm run start # overrides CMD from dockerfile
+
+  writer:
+    container_name: db-writer
+    build:
+      context: ./
+      dockerfile: ./db-writer/Dockerfile
+    env_file:
+      - ./db-writer/.env
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - app_net
+    volumes:
+      - ./db-writer:/usr/src/app # any change to base folder should be reflected
+      - /usr/src/app/node_modules
+    command: npm run start # overrides CMD from dockerfile
+
+networks:
+  app_net:
+    driver: bridge
