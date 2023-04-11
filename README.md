@@ -48,3 +48,11 @@ MIKRO_ORM_MIGRATIONS_ALL_OR_NOTHING=true
 
 # CAUTION
 Saving to database doesn't work due to some configuration issue with Mikro-Orm. It is under investigation
+
+You should see in the db-writer console a message saying 
+```
+Received event with data = {blockNumber}
+and
+Block ${block.number} saved successfully
+```
+after listener receives blocks and pushes it to the queue
