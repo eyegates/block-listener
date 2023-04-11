@@ -45,3 +45,6 @@ MIKRO_ORM_MIGRATIONS_PATH_TS=src/config/migrations
 MIKRO_ORM_MIGRATIONS_GLOB='!(*.d).{js,ts}'
 MIKRO_ORM_MIGRATIONS_ALL_OR_NOTHING=true
 ```
+
+# CAUTION
+Saving to database doesn't work due to some configuration issue with Mikro-Orm. It is under investigation
